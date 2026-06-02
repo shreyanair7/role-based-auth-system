@@ -1,3 +1,5 @@
+// frontend/src/pages/Login.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +15,9 @@ function Login() {
   const [showPassword, setShowPassword] =
     useState(false);
 
+  const [message, setMessage] =
+    useState('');
+
   const login = async () => {
 
     try {
@@ -26,6 +31,7 @@ function Login() {
       );
 
       // SAVE DATA
+
       localStorage.setItem(
         'token',
         res.data.token
@@ -41,24 +47,39 @@ function Login() {
         res.data.role
       );
 
+      setMessage(res.data.message);
+
       // ROLE REDIRECTION
-      if(res.data.role === "Admin"){
 
-        navigate('/admin-dashboard');
+      setTimeout(() => {
 
-      }
-      else{
+        if(res.data.role === "Admin"){
 
-        navigate('/user-dashboard');
+          navigate('/admin-dashboard');
 
-      }
+        }
+        else{
+
+          navigate('/user-dashboard');
+
+        }
+
+      }, 1200);
 
     } catch (err) {
 
       if (err.response) {
-        alert(err.response.data.message);
+
+        setMessage(
+          err.response.data.message
+        );
+
       } else {
-        alert("Backend server not responding.");
+
+        setMessage(
+          "Backend server not responding."
+        );
+
       }
 
     }
@@ -78,6 +99,22 @@ function Login() {
           Login to continue
         </p>
 
+        {
+
+          message && (
+
+            <div style={styles.messageBox}>
+
+              {message}
+
+            </div>
+
+          )
+
+        }
+
+        {/* USERNAME */}
+
         <input
           style={styles.input}
           type="text"
@@ -86,6 +123,8 @@ function Login() {
             setLoginUsername(e.target.value)
           }
         />
+
+        {/* PASSWORD */}
 
         <div style={styles.passwordContainer}>
 
@@ -119,6 +158,8 @@ function Login() {
 
         </div>
 
+        {/* LOGIN BUTTON */}
+
         <button
           style={styles.primaryButton}
           onClick={login}
@@ -126,15 +167,34 @@ function Login() {
           Login
         </button>
 
+        {/* FORGOT PASSWORD */}
+
+        <p
+          style={styles.forgotPassword}
+          onClick={() =>
+            navigate('/forgot-password')
+          }
+        >
+
+          Forgot Password?
+
+        </p>
+
+        {/* REGISTER LINK */}
+
         <p style={styles.switchText}>
 
           Don’t have an account?
 
           <span
             style={styles.switchLink}
-            onClick={() => navigate('/register')}
+            onClick={() =>
+              navigate('/register')
+            }
           >
+
             Register
+
           </span>
 
         </p>
@@ -167,12 +227,22 @@ const styles = {
 
   title: {
     fontSize: '30px',
-    marginBottom: '8px'
+    marginBottom: '8px',
+    color: '#111827'
   },
 
   subtitle: {
     color: '#6b7280',
     marginBottom: '28px'
+  },
+
+  messageBox: {
+    background: '#f3f4f6',
+    padding: '14px',
+    borderRadius: '12px',
+    marginBottom: '18px',
+    color: '#111827',
+    fontSize: '14px'
   },
 
   input: {
@@ -181,7 +251,8 @@ const styles = {
     borderRadius: '12px',
     border: '1px solid #d1d5db',
     marginBottom: '18px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    outline: 'none'
   },
 
   passwordContainer: {
@@ -195,7 +266,8 @@ const styles = {
     paddingRight: '50px',
     borderRadius: '12px',
     border: '1px solid #d1d5db',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    outline: 'none'
   },
 
   eyeButton: {
@@ -205,7 +277,8 @@ const styles = {
     transform: 'translateY(-50%)',
     border: 'none',
     background: 'transparent',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    color: '#6b7280'
   },
 
   primaryButton: {
@@ -216,19 +289,30 @@ const styles = {
     background: '#111827',
     color: '#fff',
     fontWeight: '600',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    fontSize: '15px'
+  },
+
+  forgotPassword: {
+    textAlign: 'right',
+    marginTop: '14px',
+    cursor: 'pointer',
+    color: '#374151',
+    fontSize: '14px'
   },
 
   switchText: {
     marginTop: '20px',
     textAlign: 'center',
-    color: '#6b7280'
+    color: '#6b7280',
+    fontSize: '14px'
   },
 
   switchLink: {
     marginLeft: '6px',
     fontWeight: '600',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    color: '#111827'
   }
 
 };
