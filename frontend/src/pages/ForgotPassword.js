@@ -1,28 +1,43 @@
+// frontend/src/pages/ForgotPassword.js
+
 import React, { useState } from 'react';
+
 import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword() {
 
   const navigate = useNavigate();
 
+  // STATES
+
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
+
   const [message, setMessage] = useState('');
 
+  const [loading, setLoading] = useState(false);
+
+  // FORGOT PASSWORD FUNCTION
+
   const forgotPassword = async () => {
+
+    setLoading(true);
+
+    setMessage('');
 
     try {
 
       const res = await axios.post(
+
         'http://127.0.0.1:5000/forgot-password',
+
         { email }
+
       );
 
-      setToken(res.data.token);
-
       setMessage(
-        'Password reset link sent to your email.'
+        res.data.message
       );
 
     } catch (err) {
@@ -40,6 +55,10 @@ function ForgotPassword() {
         );
 
       }
+
+    } finally {
+
+      setLoading(false);
 
     }
   };
@@ -63,59 +82,82 @@ function ForgotPassword() {
           message && (
 
             <div style={styles.messageBox}>
+
               {message}
+
             </div>
 
           )
 
         }
 
+        {/* EMAIL INPUT */}
+
         <input
+
           style={styles.input}
+
           type="email"
+
           placeholder="Email Address"
+
           onChange={(e)=>
             setEmail(e.target.value)
           }
+
         />
 
+        {/* BUTTON */}
+
         <button
-          style={styles.primaryButton}
+
+          style={{
+            ...styles.primaryButton,
+
+            background: loading
+              ? '#374151'
+              : '#111827',
+
+            opacity: loading
+              ? 0.8
+              : 1,
+
+            transform: loading
+              ? 'scale(0.98)'
+              : 'scale(1)',
+
+            transition: 'all 0.2s ease'
+          }}
+
           onClick={forgotPassword}
+
+          disabled={loading}
+
         >
-          Generate Reset Token
+
+          {
+
+            loading
+            ? 'Sending Reset Email...'
+            : 'Send Reset Link'
+
+          }
+
         </button>
 
-        {
+        {/* BACK TO LOGIN */}
 
-          token && (
+        <p
 
-            <div style={styles.tokenBox}>
+          style={styles.backText}
 
-              <strong>
-                Reset Token:
-              </strong>
+          onClick={() => navigate('/')}
 
-              <p>
-                {token}
-              </p>
+        >
 
-              <button
-                style={styles.secondaryButton}
-                onClick={() =>
-                  navigate('/reset-password', {
-                    state: { token }
-                  })
-                }
-              >
-                Continue Reset
-              </button>
+          Back to Login
 
-            </div>
-
-          )
-
-        }
+        </p>
 
       </div>
 
@@ -126,77 +168,123 @@ function ForgotPassword() {
 const styles = {
 
   page: {
+
     minHeight: '100vh',
+
     display: 'flex',
+
     justifyContent: 'center',
+
     alignItems: 'center',
+
     background: '#f5f7fb',
+
     fontFamily: 'Inter, sans-serif'
+
   },
 
   card: {
+
     width: '100%',
+
     maxWidth: '420px',
+
     background: '#fff',
+
     padding: '40px',
+
     borderRadius: '18px',
+
     boxShadow: '0 10px 30px rgba(0,0,0,0.08)'
+
   },
 
   title: {
+
     fontSize: '30px',
-    marginBottom: '10px'
+
+    marginBottom: '10px',
+
+    color: '#111827'
+
   },
 
   subtitle: {
+
     color: '#6b7280',
+
     marginBottom: '24px'
+
   },
 
   input: {
+
     width: '100%',
+
     padding: '14px',
+
     borderRadius: '12px',
+
     border: '1px solid #d1d5db',
+
     marginBottom: '18px',
-    boxSizing: 'border-box'
+
+    boxSizing: 'border-box',
+
+    outline: 'none'
+
   },
 
   primaryButton: {
-    width: '100%',
-    padding: '14px',
-    borderRadius: '12px',
-    border: 'none',
-    background: '#111827',
-    color: '#fff',
-    fontWeight: '600',
-    cursor: 'pointer'
-  },
 
-  secondaryButton: {
     width: '100%',
-    padding: '12px',
-    borderRadius: '10px',
+
+    padding: '14px',
+
+    borderRadius: '12px',
+
     border: 'none',
-    background: '#374151',
+
+    background: '#111827',
+
     color: '#fff',
+
+    fontWeight: '600',
+
     cursor: 'pointer',
-    marginTop: '14px'
+
+    fontSize: '15px'
+
   },
 
   messageBox: {
+
     background: '#f3f4f6',
+
     padding: '14px',
+
     borderRadius: '12px',
-    marginBottom: '18px'
+
+    marginBottom: '18px',
+
+    color: '#111827',
+
+    fontSize: '14px'
+
   },
 
-  tokenBox: {
-    marginTop: '24px',
-    padding: '16px',
-    borderRadius: '12px',
-    background: '#f9fafb',
-    wordBreak: 'break-word'
+  backText: {
+
+    marginTop: '20px',
+
+    textAlign: 'center',
+
+    color: '#6b7280',
+
+    cursor: 'pointer',
+
+    fontSize: '14px'
+
   }
 
 };
